@@ -1,0 +1,7 @@
+openai
+streamlit
+google-api-python-client
+youtube-transcript-api
+oauth2client==3.0.0
+pytube
+tiktoken
