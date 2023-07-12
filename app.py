@@ -26,8 +26,6 @@ PAGES = [
     '의학'
 ]
 
-print(st.secrets["youtube_api_key"])
-
 # YouTube Data API 클라이언트 빌드
 youtube = build('youtube', 'v3', developerKey=st.secrets["youtube_api_key"])
 
