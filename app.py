@@ -10,13 +10,21 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.indexes import VectorstoreIndexCreator
+from langchain.vectorstores import FAISS
+from langchain.vectorstores import Chroma
+from langchain.chains import RetrievalQA
+
+
 
 openai.api_key = st.secrets["api_key"]
 
 
-chat = ChatOpenAI(model='gpt-3.5-turbo', temperature=0.9, openai_api_key=openai.api_key)
-sys = SystemMessage(content='당신은 한글로 대답해주는 육아전문 AI 입니다')
+chat = ChatOpenAI(temperature=0, openai_api_key=openai.api_key)
+sys = SystemMessage(content='당신은 한글로 친절하고 자세히 대답해주는 육아전문 AI 입니다')
 
 
 
@@ -38,6 +46,17 @@ st.set_page_config(
         "About": None
     }
 )
+
+def embedding_index_creator(loader):
+    embeddings = OpenAIEmbeddings(openai_api_key=openai.api_key)
+    index = VectorstoreIndexCreator(
+        vectorstore_cls=FAISS,
+        embedding=embeddings,
+        # text_splitter=CharacterTextSplitter(chunk_size=3000, chunk_overlap=0)
+    ).from_loaders([loader])
+    # 파일로 저장
+    index.vectorstore.save_local("faiss-nj")
+    return index
 
 def search_videos(query, max_results=10):
     search_response = youtube.search().list(
@@ -76,16 +95,41 @@ def query_UI():
                 add_video_info=True
             )
         document = loader.load()
+        
+        print(document)
+        
         outmsg = f"Found video from {document[0].metadata['author']} that is {document[0].metadata['length']} seconds long"
-        text_splitter = CharacterTextSplitter(chunk_size=3000, chunk_overlap=100)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         docs = text_splitter.split_documents(document)
-        chain = load_summarize_chain(llm=chat, chain_type='map_reduce', verbose=True)
-        result = chain.run(docs)
         
-        msg = HumanMessage(content=result)
-        aimsg = chat([sys, msg])
         
-        st.write(aimsg.content)
+        
+        # chain = load_summarize_chain(llm=chat, chain_type='map_reduce', verbose=True)
+        # print('docs:')
+        # print(docs)
+        # result = chain.run(docs[:10])
+        
+        # # 임시로 막자
+        # msg = HumanMessage(content=result)
+        # aimsg = chat([sys, msg])
+        
+        # st.write(aimsg.content)
+        
+        
+        # vectorstore = Chroma.from_documents(documents=docs, embedding=OpenAIEmbeddings(openai_api_key=openai.api_key))
+        # qa_chain = RetrievalQA.from_chain_type(chat, retriever=vectorstore.as_retriever())
+        # qa_res = qa_chain({"query": user_input})
+        # print(qa_res)
+        
+        
+        
+        index = embedding_index_creator(loader)
+        
+        result = index.query(user_input, llm=chat, verbose=True)
+        print(result)
+        st.write(result)
+        
+        
         st.write('연관 영상: '+ 'https://youtu.be/'+ pick['video_id'])
         
         # st.write(user_input)

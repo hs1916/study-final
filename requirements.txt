@@ -6,3 +6,6 @@ youtube-transcript-api
 oauth2client==3.0.0
 pytube
 tiktoken
+faiss-cpu
+sentence_transformers
+chromadb
