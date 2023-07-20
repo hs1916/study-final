@@ -8,13 +8,7 @@ import traceback
 from datetime import date
 from search.youtube_video import search_videos_response
 
-# ========= 유튜브로 요리 레시피 조회 ==========
 
-#AIzaSyCMsyAYpQNJS3MwcxT4AfGTTZUVUdC_0Uw (dohchoi91)
-#AIzaSyAkX8HZmKnOdh9RJ8FH7j84VMKllpZYXuw (dohchoi0118)
-#AIzaSyCftV7VQwPTe88J9CWRIrEDzWODqsMmNYg (dhyun175)
-
-youtube_api_key = 'AIzaSyCftV7VQwPTe88J9CWRIrEDzWODqsMmNYg'
 
 # youtube = build('youtube', 'v3', developerKey=youtube_api_key)
 directory_path = "../csv/cook"  # 하위 디렉토리 경로
