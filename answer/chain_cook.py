@@ -14,11 +14,8 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory
 
-os.environ['OPENAI_API_KEY'] = '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'
 
-
-
-def answer_on_cook(query: str)->str:
+def answer_on_cook(query: str, api_key: str)->str:
   print("======= 시작 ========")
 
   embedding_function = OpenAIEmbeddings()

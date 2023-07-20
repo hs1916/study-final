@@ -8,13 +8,19 @@ from langchain.embeddings import OpenAIEmbeddings
 
 
 def process_llm_response(search_string, api_key):
-    client = chromadb.Client(
-        Settings(
-            chroma_api_impl="rest",
-            chroma_server_host="15.164.29.82",
-            chroma_server_http_port="8000",
-        )
+    # client = chromadb.Client(
+    #     Settings(
+    #         chroma_api_impl="rest",
+    #         chroma_server_host="15.164.29.82",
+    #         chroma_server_http_port="8000",
+    #     )
+    # )
+    
+    client = chromadb.HttpClient(
+        host="15.164.29.82",
+        port="8000"
     )
+    
     embedding = OpenAIEmbeddings(model="text-embedding-ada-002", chunk_size=1, openai_api_key=api_key)
     vectordb2 = Chroma(
         client=client, collection_name="parenting", embedding_function=embedding

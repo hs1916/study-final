@@ -143,7 +143,7 @@ def run_UI():
         if user_input and submit:
             youtube_cook_video(user_input, youtube)
             embedding_cook_chroma()
-            answer = answer_on_cook(user_input)
+            answer = answer_on_cook(user_input, openai.api_key)
             st.write(answer['answer'])
 
         

@@ -10,4 +10,5 @@ tiktoken
 faiss-cpu
 sentence_transformers
 chromadb
+chroma-migrate
 black
