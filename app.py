@@ -145,7 +145,8 @@ def run_UI():
         if user_input and submit:
             with st.spinner("답변 생성중..."):
                 youtube_cook_video(user_input, youtube)
-                embedding_cook_chroma()
+                embedding_cook_chroma(openai.api_key)
+                print(openai.api_key)
                 answer = answer_on_cook(user_input, openai.api_key)
                 st.write(answer['answer'])
 
