@@ -61,8 +61,8 @@ st.set_page_config(
 
 
 def query_UI():
-    st.title("의학")
-    st.text("의학 정보에 대해 물어보세요")
+    st.title("의학 🧑‍⚕️")
+    st.text("의학 정보에 대해 물어보세요 🔎 ")
 
     with st.form("form"):
         user_input = st.text_input("Prompt")
@@ -109,8 +109,8 @@ def run_UI():
                          """
         )
         
-        st.title("육아")
-        st.text("육아 정보에 대해 물어보세요")
+        st.title("육아 👶🏻")
+        st.text("육아 정보에 대해 물어보세요 🔎 ")
 
         with st.form("form"):
             user_input = st.text_input("Prompt")
@@ -137,8 +137,8 @@ def run_UI():
                             유투브 상의 요리에 대한 질문을 해주세요 
                          """
         )
-        st.title("요리")
-        st.text("요리 정보에 대해 물어보세요")
+        st.title("요리 🍜")
+        st.text("요리 정보에 대해 물어보세요 🔎")
         with st.form("form"):
             user_input = st.text_input("Prompt")
             submit = st.form_submit_button("Submit")
