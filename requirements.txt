@@ -1,6 +1,7 @@
 openai
 langchain
 streamlit
+streamlit-chat
 google-api-python-client
 youtube-transcript-api
 oauth2client==3.0.0
@@ -9,3 +10,4 @@ tiktoken
 faiss-cpu
 sentence_transformers
 chromadb
+black
