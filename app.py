@@ -69,24 +69,25 @@ def query_UI():
         submit = st.form_submit_button("Submit")
 
     if user_input and submit:
+        with st.spinner("답변 생성중..."):
         # video 검색 및 caption load
         # embedding 및 쿼리
-        results = search_videos(user_input, youtube)
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500, chunk_overlap=200
-        )
-        docs = video_document_list(results, text_splitter)
-        qa = embedding_vectorstores(docs, openai.api_key)
+            results = search_videos(user_input, youtube)
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=500, chunk_overlap=200
+            )
+            docs = video_document_list(results, text_splitter)
+            qa = embedding_vectorstores(docs, openai.api_key)
 
-        # 최종 Question 및 출력
-        answer = qa({"query": user_input})
-        template_answer = answer_using_template(answer, user_input, openai.api_key)
-        print(template_answer)
-        st.write(template_answer)
-        # st.write(answer)
-        video_url = "https://youtu.be/" + results[0]["videoId"]
-        st.video(video_url)
-        st.write("연관 영상: " + "https://youtu.be/" + results[0]["videoId"])
+            # 최종 Question 및 출력
+            answer = qa({"query": user_input})
+            template_answer = answer_using_template(answer, user_input, openai.api_key)
+            print(template_answer)
+            st.write(template_answer)
+            # st.write(answer)
+            video_url = "https://youtu.be/" + results[0]["videoId"]
+            st.video(video_url)
+            st.write("연관 영상: " + "https://youtu.be/" + results[0]["videoId"])
 
 
 def run_UI():
@@ -116,17 +117,18 @@ def run_UI():
             submit = st.form_submit_button("Submit")
 
         if user_input and submit:
-            query, response = process_llm_response(user_input, openai.api_key)
-            print('query: ' + query)
-            print('response: ' + response)
-            
-            st.session_state["user_prompt_history"].append(user_input)
-            st.session_state["chat_answer_history"].append(response)
-            st.session_state["chat_history"].append((user_input,response))
-            if st.session_state["chat_answer_history"]:
-                for ans, query in zip(st.session_state["chat_answer_history"], st.session_state["user_prompt_history"]):
-                    message(query, is_user=True)
-                    message(ans)
+            with st.spinner("답변 생성중..."):
+                query, response = process_llm_response(user_input, openai.api_key)
+                print('query: ' + query)
+                print('response: ' + response)
+                
+                st.session_state["user_prompt_history"].append(user_input)
+                st.session_state["chat_answer_history"].append(response)
+                st.session_state["chat_history"].append((user_input,response))
+                if st.session_state["chat_answer_history"]:
+                    for ans, query in zip(st.session_state["chat_answer_history"], st.session_state["user_prompt_history"]):
+                        message(query, is_user=True)
+                        message(ans)
 
     elif page == "요리":
         st.sidebar.write(
@@ -141,10 +143,11 @@ def run_UI():
             user_input = st.text_input("Prompt")
             submit = st.form_submit_button("Submit")
         if user_input and submit:
-            youtube_cook_video(user_input, youtube)
-            embedding_cook_chroma()
-            answer = answer_on_cook(user_input, openai.api_key)
-            st.write(answer['answer'])
+            with st.spinner("답변 생성중..."):
+                youtube_cook_video(user_input, youtube)
+                embedding_cook_chroma()
+                answer = answer_on_cook(user_input, openai.api_key)
+                st.write(answer['answer'])
 
         
     elif page == "의학":

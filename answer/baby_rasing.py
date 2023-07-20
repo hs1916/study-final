@@ -18,7 +18,10 @@ def process_llm_response(search_string, api_key):
     
     client = chromadb.HttpClient(
         host="15.164.29.82",
-        port="8000"
+        port="8000",
+        settings=Settings(
+            chroma_api_impl="rest"
+        )
     )
     
     embedding = OpenAIEmbeddings(model="text-embedding-ada-002", chunk_size=1, openai_api_key=api_key)
@@ -39,5 +42,9 @@ def process_llm_response(search_string, api_key):
     start_string = f"{int(start_time/60)}m{int(start_time%60)}s"
     youtube_url = f"https://www.youtube.com/watch?v={video_id}&t={start_string}"
     print(llm_response["query"])
+    
+    
+    print('make another window for showing related youtube [s]')
     webbrowser.open(youtube_url, new=2)
+    print('make another window for showing related youtube [e]')
     return llm_response["query"], llm_response["result"]
