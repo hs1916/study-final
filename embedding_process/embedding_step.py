@@ -13,12 +13,40 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from search.youtube_video import youtube_caption_load
+import chromadb
 
 
 def embedding_vectorstores(docs: List[Document], api_key: str):
-    vectorstore = FAISS.from_documents(
-        documents=docs, embedding=OpenAIEmbeddings(openai_api_key=api_key)
+    
+    print('-------------')
+    print(docs)
+    print('-------------')
+    for doc in docs:
+        print(doc.metadata)
+        if doc.metadata['description'] is None:
+            print(doc.metadata['description'])
+            doc.metadata['description'] = 'No description'
+            
+    chroma_client = chromadb.HttpClient(host="3.38.132.139", port=8000)
+    embeddings = OpenAIEmbeddings(openai_api_key=api_key)
+    
+    # Chroma.from_documents(
+    #     client=chroma_client, documents=docs, embedding=embeddings
+    # )
+    
+    # vectorstore = FAISS.from_documents(
+    #     documents=docs, embedding=OpenAIEmbeddings(openai_api_key=api_key)
+    # )
+    
+
+    
+    vectorstore = Chroma(
+        client=chroma_client,
+        collection_name="langchain",
+        embedding_function=embeddings,
     )
+
+
     qa = RetrievalQA.from_chain_type(
         llm=ChatOpenAI(model="gpt-3.5-turbo-16k", openai_api_key=api_key),
         retriever=vectorstore.as_retriever(),

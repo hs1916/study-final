@@ -19,13 +19,13 @@ from langchain.chains import RetrievalQA
 from search.youtube_video import search_videos, youtube_caption_load
 from embedding_process.embedding_step import embedding_vectorstores, video_document_list
 from answer.answer_template import answer_using_template
-from answer.baby_rasing import process_llm_response
+from answer.baby_rasing import process_llm_response, send_mail
 from streamlit_chat import message
+import json
 
 # 요리
 from answer.chain_cook import answer_on_cook
-from embedding_process.chroma_cook import embedding_cook_chroma
-from search.youtube_cook import youtube_cook_video
+
 
 
 
@@ -72,9 +72,10 @@ def query_UI():
         with st.spinner("답변 생성중..."):
         # video 검색 및 caption load
         # embedding 및 쿼리
-            results = search_videos(user_input, youtube)
+        
+            results = search_videos(user_input, youtube, 2)
             text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=500, chunk_overlap=200
+                chunk_size=400, chunk_overlap=100
             )
             docs = video_document_list(results, text_splitter)
             qa = embedding_vectorstores(docs, openai.api_key)
@@ -119,8 +120,20 @@ def run_UI():
         if user_input and submit:
             with st.spinner("답변 생성중..."):
                 query, response = process_llm_response(user_input, openai.api_key)
-                print('query: ' + query)
-                print('response: ' + response)
+                # data = dict(response)
+                    
+                # print('query: ' + query)
+                # print('response: ' + response)
+                # print(type(response))
+                # print(data['content']) 
+                
+                # 메일 발송
+                gmail_user = 'bogenarc@gmail.com'
+                gmail_password = 'irpokgnhmufhmhan'
+                to = 'hs1916@gmail.com'
+
+     
+                send_mail(gmail_user, gmail_password, to, query, response)
                 
                 st.session_state["user_prompt_history"].append(user_input)
                 st.session_state["chat_answer_history"].append(response)
@@ -144,11 +157,21 @@ def run_UI():
             submit = st.form_submit_button("Submit")
         if user_input and submit:
             with st.spinner("답변 생성중..."):
-                youtube_cook_video(user_input, youtube)
-                embedding_cook_chroma(openai.api_key)
-                print(openai.api_key)
-                answer = answer_on_cook(user_input, openai.api_key)
-                st.write(answer['answer'])
+                query, response = answer_on_cook(user_input, openai.api_key)
+                print('query: ' + query)
+                print('response: ' + response)
+                
+                st.session_state["user_prompt_history"].append(user_input)
+                st.session_state["chat_answer_history"].append(response)
+                st.session_state["chat_history"].append((user_input,response))
+                if st.session_state["chat_answer_history"]:
+                    index = 0
+                    for ans, query in zip(st.session_state["chat_answer_history"], st.session_state["user_prompt_history"]):
+                        widget_key1 = hash(ans) + index
+                        widget_key2 = hash(query) + index
+                        message(query, is_user=True, key=widget_key1)
+                        message(ans, key=widget_key2)
+                        index = index + 1
 
         
     elif page == "의학":
